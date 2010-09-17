@@ -13,9 +13,25 @@ class Monk < Thor
   desc "init", "Initialize a Monk application"
   method_option :skeleton, :type => :string, :aliases => "-s"
   def init(target = ".")
-    clone(source(options[:skeleton] || "default") || options[:skeleton], target) ?
-      cleanup(target) :
+    if clone(source(options[:skeleton] || "default") || options[:skeleton], target)
+      cleanup(target)
+      rvmrc appname(target), target
+      display_success_banner appname(target)
+    else
       say_status(:error, clone_error(target))
+    end
+  end
+
+  desc "rvmrc", "Create an .rvmrc file"
+  def rvmrc(gemset, target = '.', version = '1.9.2')
+    key = [version, gemset].join('@')
+
+    say "Generating an .rvmrc file in your project."
+    response = ask("Enter gemset name and ruby version (default: `%s`):" % key)
+
+    key = response unless response.to_s.empty?
+
+    create_file File.join(target, '.rvmrc'), "rvm --create use %s\n" % key
   end
 
   desc "show NAME", "Display the repository address for NAME"
@@ -91,5 +107,23 @@ private
 
   def monk_home
     ENV["MONK_HOME"] || File.join(Thor::Util.user_home)
+  end
+
+  def display_success_banner
+    say "\n"
+    say "=" * 50
+    say "-> You have successfully generated #{name}"
+    say "=" * 50
+    say "\n"
+   
+    if File.exist?(File.join(target, 'default.gems'))
+      say "The skeleton you used comes with a `default.gems` file."
+      say "To import the gems just run `rvm gemset import`."
+      say "You may also clear out the existing gemset by doing `rvm gemset clear`."
+    end
+  end
+
+  def appname(target)
+    target == '.' ? File.basename(FileUtils.pwd) : target
   end
 end
