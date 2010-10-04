@@ -13,17 +13,20 @@ class Monk < Thor
   desc "init", "Initialize a Monk application"
   method_option :skeleton, :type => :string, :aliases => "-s"
   def init(target = ".")
-    if clone(source(options[:skeleton] || "default") || options[:skeleton], target)
+    check_for_rvm
+
+    repo = source(options[:skeleton] || "default") || options[:skeleton]
+
+    if clone(repo, target)
       cleanup(target)
       rvmrc appname(target), target
-      display_success_banner appname(target)
     else
       say_status(:error, clone_error(target))
     end
   end
 
-  desc "rvmrc", "Create an .rvmrc file"
-  def rvmrc(gemset, target = '.', version = '1.9.2')
+  desc "rvmrc GEMSET [TARGET] [VERSION]", "Create an .rvmrc file"
+  def rvmrc(gemset, target = ".", version = '1.9.2')
     key = [version, gemset].join('@')
 
     say "Generating an .rvmrc file in your project."
@@ -31,7 +34,34 @@ class Monk < Thor
 
     key = response unless response.to_s.empty?
 
-    create_file File.join(target, '.rvmrc'), "rvm --create use %s\n" % key
+    inside(target) do
+      run "rvm --rvmrc --create %s && rvm rvmrc trust" % key
+    end
+
+    display_readme(target)
+  end
+
+  desc "install --clean", "Install all dependencies."
+  method_option :clean, :type => :boolean
+  def install(manifest = ".gems")
+    run("rvm rvmrc load")
+    run("rvm --force gemset empty") if options.clean?
+
+    File.read(manifest).split("\n").each do |gem|
+      if gem =~ /\A(.*?) -v(.*?)\z/
+        gem_install($1, $2)
+      end
+    end
+  end
+
+  desc "lock", "Lock the current dependencies to the gem manifest file."
+  def lock
+    run("rvm gemset export .gems")
+  end
+
+  desc "unpack", "Freeze the current dependencies."
+  def unpack
+    run("rvm gemset unpack")
   end
 
   desc "show NAME", "Display the repository address for NAME"
@@ -59,7 +89,6 @@ class Monk < Thor
   end
 
 private
-
   def clone(source, target)
     if Dir["#{target}/*"].empty?
       say_status :fetching, source
@@ -88,10 +117,10 @@ private
     end
   end
 
-  def write_monk_config_file
+  def write_monk_config_file(default = "git://github.com/monkrb/skeleton.git")
     remove_file(monk_config_file, :verbose => false)
     create_file(monk_config_file, nil, :verbose => false) do
-      config = @monk_config || { "default" => "git://github.com/monkrb/skeleton.git" }
+      config = @monk_config || { "default" => default }
       config.to_yaml
     end
   end
@@ -109,21 +138,47 @@ private
     ENV["MONK_HOME"] || File.join(Thor::Util.user_home)
   end
 
-  def display_success_banner
-    say "\n"
-    say "=" * 50
-    say "-> You have successfully generated #{name}"
-    say "=" * 50
-    say "\n"
-   
-    if File.exist?(File.join(target, 'default.gems'))
-      say "The skeleton you used comes with a `default.gems` file."
-      say "To import the gems just run `rvm gemset import`."
-      say "You may also clear out the existing gemset by doing `rvm gemset clear`."
-    end
-  end
-
   def appname(target)
     target == '.' ? File.basename(FileUtils.pwd) : target
   end
+
+  def gem_install(lib, version, command = "gem install #{lib} -v#{version}")
+    require "rubygems"
+
+    if Gem.available?(lib, version) || vendored?(lib, version)
+      say " " * 14 + command
+    else
+      run command
+    end
+  end
+
+  def vendored?(lib, version)
+    File.exist?("./vendor/gems/#{lib}-#{version}")
+  end
+
+  def check_for_rvm
+    begin
+      `rvm`
+    rescue Errno::ENOENT
+      puts RVM_REQUIRED_MESSAGE
+      exit
+    end
+  end
+
+  def display_readme(target)
+    puts "\n" + File.read(Dir[File.join(target, "README*")].first)
+  end
+
+  RVM_REQUIRED_MESSAGE = (<<-EOT).gsub(/^ {4}/, "")
+
+    !! OOPS... Monk requires RVM to be installed in your machine.
+    !! The easiest way to install RVM is by using curl, as follows:
+
+      bash < <( curl http://rvm.beginrescueend.com/releases/rvm-install-head )
+
+    You can also head up to http://rvm.beginrescueend.com/rvm/install/
+    to read about the installation process of RVM.
+
+  EOT
 end
+
