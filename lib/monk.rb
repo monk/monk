@@ -64,6 +64,29 @@ class Monk < Thor
     run("rvm gemset unpack")
   end
 
+  desc "vendor NAME", "Vendor a github repo, e.g. soveran/ohm."
+  method_option :force, :type => :boolean
+  def vendor(repo)
+    repo   = "git://github.com/#{repo}.git" unless repo =~ %r{^[a-z]+://}
+    name   = repo.split("/").last
+    target = "vendor/gems/#{name}"
+
+    if File.exist?(target)
+      if not options.force?
+        say_status(:error, "#{target} already exists. Use --force to remove.")
+        exit
+      else
+        FileUtils.rm_r(target)
+      end
+    end
+
+    inside("vendor/gems") do
+      run "git clone #{repo} -q --depth 1"
+    end
+
+    cleanup(target)
+  end
+
   desc "show NAME", "Display the repository address for NAME"
   def show(name)
     say_status name, source(name) || "repository not found"
