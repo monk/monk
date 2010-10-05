@@ -68,7 +68,7 @@ class Monk < Thor
   method_option :force, :type => :boolean
   def vendor(repo)
     repo   = "git://github.com/#{repo}.git" unless repo =~ %r{^[a-z]+://}
-    name   = repo.split("/").last
+    name   = repo.split("/").last.gsub(/\.git$/, "")
     target = "vendor/gems/#{name}"
 
     if File.exist?(target)
