@@ -51,4 +51,3 @@ scope do
     rvm("--force gemset delete custom-monk-test")
   end
 end
-

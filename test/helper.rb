@@ -42,4 +42,3 @@ def gemset?(gemset)
   out, _ = rvm("gemset list")
   out.match(/^#{gemset}$/)
 end
-

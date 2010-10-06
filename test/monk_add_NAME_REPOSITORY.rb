@@ -42,4 +42,3 @@ scope do
     assert gemset?("monk-test")
   end
 end
-
