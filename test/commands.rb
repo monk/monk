@@ -6,6 +6,7 @@ module Commands
     out, err = nil
 
     Open3.popen3(cmd) do |_in, _out, _err|
+      yield _in if block_given?
       out = _out.read
       err = _err.read
     end
@@ -26,35 +27,6 @@ module Commands
     silence_stream(*streams_to_silence) do
       (pid = fork) ? Process.detach(pid) : exec(cmd)
     end
-  end
-
-  def listening?(host, port)
-    begin
-      socket = TCPSocket.new(host, port)
-      socket.close unless socket.nil?
-      true
-    rescue Errno::ECONNREFUSED,
-      Errno::EBADF,           # Windows
-      Errno::EADDRNOTAVAIL    # Windows
-      false
-    end
-  end
-
-  def wait_for_service(host, port, timeout = 3)
-    start_time = Time.now
-
-    until listening?(host, port)
-      if timeout && (Time.now > (start_time + timeout))
-        raise SocketError.new("Socket #{host}:#{port} did not open within #{timeout} seconds")
-      end
-    end
-
-    true
-  end
-
-  def suspects(port)
-    list = sh("lsof -i :#{port}").first.split("\n")[1..-1] || []
-    list.map {|s| s[/^.+? (\d+)/, 1] }
   end
 
   def silence_stream(*streams) #:yeild:

@@ -14,16 +14,12 @@ def root(*args)
   File.join(ROOT, *args)
 end
 
-def monk(args = nil)
+def monk(args = nil, &block)
   cmd =
     "env MONK_HOME=#{root "test/tmp"} " +
     "ruby -rubygems #{root "bin/monk"} #{args}"
 
-  if block_given?
-    IO.popen(cmd, "w") { |io| yield io }
-  else
-    sh(cmd)
-  end
+  sh(cmd, &block)
 end
 
 def rvm(args = nil)
