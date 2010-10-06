@@ -48,7 +48,7 @@ class Monk < Thor
     run("rvm --force gemset empty") if options.clean?
 
     File.read(manifest).split("\n").each do |gem|
-      if gem =~ /\A(.*?) -v(.*?)\z/
+      if gem =~ /\A(.*?) --version (.*?)\z/
         gem_install($1, $2)
       end
     end
@@ -57,6 +57,14 @@ class Monk < Thor
   desc "lock", "Lock the current dependencies to the gem manifest file."
   def lock
     run("rvm gemset export .gems")
+    gems = File.read(".gems")
+    remove_file(".gems", :verbose => false)
+    create_file(".gems", nil, :verbose => false) do
+      gems.split("\n").
+        reject { |line| line.start_with?("#") }.
+        map    { |line| line.gsub(/-v(.*?)$/, "--version \\1") }.
+        join("\n") + "\n"
+    end
   end
 
   desc "unpack", "Freeze the current dependencies."
@@ -169,7 +177,7 @@ private
     require "rubygems"
 
     if Gem.available?(lib, version) || vendored?(lib, version)
-      say " " * 14 + command
+      say "#{" " * 13} (already installed) #{lib} #{version}"
     else
       run command
     end
