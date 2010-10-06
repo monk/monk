@@ -15,11 +15,35 @@ def root(*args)
 end
 
 def monk(args = nil)
-  sh("env MONK_HOME=#{File.join(ROOT, "test", "tmp")} ruby -rubygems #{root "bin/monk"} #{args}")
+  cmd =
+    "env MONK_HOME=#{root "test/tmp"} " +
+    "ruby -rubygems #{root "bin/monk"} #{args}"
+
+  if block_given?
+    IO.popen(cmd, "w") { |io| yield io }
+  else
+    sh(cmd)
+  end
+end
+
+def rvm(args = nil)
+  sh("rvm #{args}")
 end
 
 prepare do
   dot_monk = File.join(ROOT, "test", "tmp", ".monk")
 
   FileUtils.rm(dot_monk) if File.exist?(dot_monk)
+  rvm("--force gemset delete monk-test")
 end
+
+def rvmrc?(gemset, dir = gemset, version = RUBY_VERSION)
+  rvmrc = File.read(root("test", "tmp", dir, ".rvmrc"))
+  rvmrc[version] && rvmrc[gemset]
+end
+
+def gemset?(gemset)
+  out, _ = rvm("gemset list")
+  out.match(/^#{gemset}$/)
+end
+

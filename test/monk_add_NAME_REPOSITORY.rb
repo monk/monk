@@ -4,7 +4,7 @@ require File.expand_path("helper", File.dirname(__FILE__))
 scope do
   test "add the named repository to the configuration" do
     monk("add foobar git://github.com/monkrb/foo.git")
-    out, err = monk("show foobar")
+    out, _ = monk("show foobar")
     assert out["foobar"]
     assert out["git://github.com/monkrb/foo.git"]
     monk("rm foobar")
@@ -17,10 +17,13 @@ scope do
       FileUtils.rm_rf("monk-test")
       FileUtils.mkdir("monk-test")
 
-      out, err = monk("init monk-test --skeleton glue")
+      out, _ = monk("init monk-test --skeleton glue")
       assert out.match(/initialized/)
       assert out.match(/glue.git/)
     end
+
+    assert rvmrc?("monk-test")
+    assert gemset?("monk-test")
   end
 
   test "allow to fetch from the added repository when using the s parameter" do
@@ -30,9 +33,13 @@ scope do
       FileUtils.rm_rf("monk-test")
       FileUtils.mkdir("monk-test")
 
-      out, err = monk("init monk-test -s glue")
+      out, _ = monk("init monk-test -s glue")
       assert out.match(/initialized/)
       assert out.match(/glue.git/)
     end
+
+    assert rvmrc?("monk-test")
+    assert gemset?("monk-test")
   end
 end
+

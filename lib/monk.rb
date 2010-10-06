@@ -20,25 +20,26 @@ class Monk < Thor
     if clone(repo, target)
       cleanup(target)
       rvmrc appname(target), target
+      display_readme(target)
     else
       say_status(:error, clone_error(target))
     end
   end
 
   desc "rvmrc GEMSET [TARGET] [VERSION]", "Create an .rvmrc file"
-  def rvmrc(gemset, target = ".", version = '1.9.2')
+  def rvmrc(gemset, target = ".", version = RUBY_VERSION)
     key = [version, gemset].join('@')
 
     say "Generating an .rvmrc file in your project."
-    response = ask("Enter gemset name and ruby version (default: `%s`):" % key)
 
-    key = response unless response.to_s.empty?
+    if gemset_exists?(gemset)
+      response = ask("Enter GEMSET and Ruby version (default: `%s`):" % key)
+      key = response unless response.to_s.empty?
+    end
 
     inside(target) do
       run "rvm --rvmrc --create %s && rvm rvmrc trust" % key
     end
-
-    display_readme(target)
   end
 
   desc "install --clean", "Install all dependencies."
@@ -196,8 +197,14 @@ private
     end
   end
 
+  def gemset_exists?(gemset)
+    `rvm gemset list`.split("\n").include?(gemset)
+  end
+
   def display_readme(target)
-    puts "\n" + File.read(Dir[File.join(target, "README*")].first)
+    readme = Dir[File.join(target, "README*")].first
+
+    puts "\n" + File.read(readme) if readme
   end
 
   RVM_REQUIRED_MESSAGE = (<<-EOT).gsub(/^ {4}/, "")
