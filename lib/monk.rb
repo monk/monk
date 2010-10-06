@@ -30,7 +30,7 @@ class Monk < Thor
     key = [version, gemset].join('@')
 
     if gemset_exists?(gemset)
-      response = ask("Enter GEMSET and Ruby version (default: `%s`):" % key)
+      response = ask("Enter gemset and Ruby version (default: `%s`):" % key)
       key = response unless response.to_s.empty?
     end
 
