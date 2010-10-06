@@ -13,14 +13,13 @@ class Monk < Thor
   desc "init", "Initialize a Monk application"
   method_option :skeleton, :type => :string, :aliases => "-s"
   def init(target = ".")
-    check_for_rvm
+    ensure_rvm
 
     repo = source(options[:skeleton] || "default") || options[:skeleton]
 
     if clone(repo, target)
       cleanup(target)
       rvmrc appname(target), target
-      display_readme(target)
     else
       say_status(:error, clone_error(target))
     end
@@ -29,8 +28,6 @@ class Monk < Thor
   desc "rvmrc GEMSET [TARGET] [VERSION]", "Create an .rvmrc file"
   def rvmrc(gemset, target = ".", version = RUBY_VERSION)
     key = [version, gemset].join('@')
-
-    say "Generating an .rvmrc file in your project."
 
     if gemset_exists?(gemset)
       response = ask("Enter GEMSET and Ruby version (default: `%s`):" % key)
@@ -188,29 +185,19 @@ private
     File.exist?("./vendor/gems/#{lib}-#{version}")
   end
 
-  def check_for_rvm
+  def ensure_rvm
     begin
       `rvm`
     rescue Errno::ENOENT
       install = "bash < <( curl http://rvm.beginrescueend.com/releases/rvm-install-head )"
       say_status :error, "Monk requires RVM to be installed."
-      say_status :hint,  "To install it, run the following command:"
-      say
-      say_indented install
-      say
+      say_status :hint,  "To install it, run: #{install}"
       exit
     end
   end
 
   def gemset_exists?(gemset)
     `rvm gemset list`.split("\n").include?(gemset)
-  end
-
-  def display_readme(target)
-    readme = Dir[File.join(target, "README*")].first
-
-    say
-    say_indented(File.read(readme)) if readme
   end
 
   def say_indented(str)

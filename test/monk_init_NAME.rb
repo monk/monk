@@ -50,18 +50,5 @@ scope do
 
     rvm("--force gemset delete custom-monk-test")
   end
-
-  test "display readme upon initialization" do
-    Dir.chdir(root("test", "tmp")) do
-      FileUtils.rm_rf("monk-test")
-      FileUtils.mkdir("monk-test")
-
-      out, _ = monk("init monk-test -s git://github.com/monk/experimental.git")
-
-      assert out["monk install"]
-      assert out["monk redis"]
-      assert out["monk start"]
-    end
-  end
 end
 
