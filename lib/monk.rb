@@ -76,7 +76,7 @@ class Monk < Thor
   desc "vendor NAME", "Vendor a github repo, e.g. soveran/ohm."
   method_option :force, :type => :boolean
   def vendor(repo)
-    repo   = "git://github.com/#{repo}.git" unless repo =~ %r{^[a-z]+://}
+    repo   = "http://github.com/#{repo}.git" unless repo =~ %r{^[a-z]+://}
     name   = repo.split("/").last.gsub(/\.git$/, "")
     target = "vendor/gems/#{name}"
 
@@ -178,7 +178,7 @@ private
     require "rubygems"
 
     if Gem.available?(lib, version) || vendored?(lib, version)
-      say "#{" " * 13} (already installed) #{lib} #{version}"
+      say_indented "(already installed) #{lib} #{version}"
     else
       run command
     end
@@ -192,7 +192,13 @@ private
     begin
       `rvm`
     rescue Errno::ENOENT
-      say "!! You're missing RVM. Make sure have it installed."
+      install = "bash < <( curl http://rvm.beginrescueend.com/releases/rvm-install-head )"
+      say_status :error, "Monk requires RVM to be installed."
+      say_status :hint,  "To install it, run the following command:"
+      say
+      say_indented install
+      say
+      exit
     end
   end
 
@@ -203,7 +209,12 @@ private
   def display_readme(target)
     readme = Dir[File.join(target, "README*")].first
 
-    puts "\n" + File.read(readme) if readme
+    say
+    say_indented(File.read(readme)) if readme
+  end
+
+  def say_indented(str)
+    say str.gsub(/^/, " " * 14)
   end
 end
 
