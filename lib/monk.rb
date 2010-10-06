@@ -192,8 +192,7 @@ private
     begin
       `rvm`
     rescue Errno::ENOENT
-      puts RVM_REQUIRED_MESSAGE
-      exit
+      say "!! You're missing RVM. Make sure have it installed."
     end
   end
 
@@ -206,17 +205,5 @@ private
 
     puts "\n" + File.read(readme) if readme
   end
-
-  RVM_REQUIRED_MESSAGE = (<<-EOT).gsub(/^ {4}/, "")
-
-    !! OOPS... Monk requires RVM to be installed in your machine.
-    !! The easiest way to install RVM is by using curl, as follows:
-
-      bash < <( curl http://rvm.beginrescueend.com/releases/rvm-install-head )
-
-    You can also head up to http://rvm.beginrescueend.com/rvm/install/
-    to read about the installation process of RVM.
-
-  EOT
 end
 
