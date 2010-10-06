@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
   s.executables.push("monk")
 
   s.add_dependency("thor", "~> 0.11")
+  s.add_development_dependency("cutest", "~> 0.1")
   s.requirements.push("git")
 
   s.files = ["LICENSE", "README.markdown", "Rakefile", "bin/monk", "lib/monk.rb", "monk.gemspec", "test/commands.rb", "test/helper.rb", "test/monk_add_NAME_REPOSITORY.rb", "test/monk_init.rb", "test/monk_init_NAME.rb", "test/monk_list.rb", "test/monk_rm_NAME.rb", "test/monk_show_NAME.rb"]
