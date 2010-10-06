@@ -46,9 +46,7 @@ class Monk < Thor
     run("rvm --force gemset empty") if options.clean?
 
     File.read(manifest).split("\n").each do |gem|
-      if gem =~ /\A(.*?) --version (.*?)\z/
-        gem_install($1, $2)
-      end
+      `gem install #{gem}`
     end
   end
 
@@ -169,16 +167,6 @@ private
 
   def appname(target)
     target == '.' ? File.basename(FileUtils.pwd) : target
-  end
-
-  def gem_install(lib, version, command = "gem install #{lib} -v#{version}")
-    require "rubygems"
-
-    if Gem.available?(lib, version) || vendored?(lib, version)
-      say_indented "(already installed) #{lib} #{version}"
-    else
-      run command
-    end
   end
 
   def vendored?(lib, version)
