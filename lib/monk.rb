@@ -38,7 +38,8 @@ class Monk < Thor
 
   desc "unpack", "Freeze the current dependencies."
   def unpack
-    run("rvm gemset unpack")
+    run("rvm rvmrc load")
+    run("rvm gemset unpack vendor")
   end
 
   desc "show NAME", "Display the repository address for NAME"
