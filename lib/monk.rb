@@ -25,8 +25,8 @@ class Monk < Thor
     run("rvm rvmrc load")
     run("rvm --force gemset empty") if options.clean?
 
-    File.readlines(manifest).each do |gem|
-      run("gem install #{gem}")
+    IO.popen("rvm gemset import") do |io|
+      say_status :info, io.readline.gsub(/\(.*?\)/, "") until io.eof?
     end
   end
 
@@ -145,3 +145,4 @@ private
     end
   end
 end
+
