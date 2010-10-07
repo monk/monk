@@ -10,6 +10,8 @@ require "test/commands"
 
 include Commands
 
+TARGET = File.expand_path("tmp/monk-test", File.dirname(__FILE__))
+
 def root(*args)
   File.join(ROOT, *args)
 end
@@ -31,14 +33,4 @@ prepare do
 
   FileUtils.rm(dot_monk) if File.exist?(dot_monk)
   rvm("--force gemset delete monk-test")
-end
-
-def rvmrc?(gemset, dir = gemset, version = RUBY_VERSION)
-  rvmrc = File.read(root("test", "tmp", dir, ".rvmrc"))
-  rvmrc[version] && rvmrc[gemset]
-end
-
-def gemset?(gemset)
-  out, _ = rvm("gemset list")
-  out.match(/^#{gemset}$/)
 end

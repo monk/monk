@@ -10,33 +10,13 @@ class Monk < Thor
     class_options.delete task
   end
 
-  desc "init", "Initialize a Monk application"
+  desc "init NAME [--skeleton SHORTHAND|URL]", "Initialize a Monk application"
   method_option :skeleton, :type => :string, :aliases => "-s"
-  def init(target = ".")
+  def init(target)
     ensure_rvm
-
-    repo = source(options[:skeleton] || "default") || options[:skeleton]
-
-    if clone(repo, target)
-      cleanup(target)
-      rvmrc appname(target), target
-    else
-      say_status(:error, clone_error(target))
-    end
-  end
-
-  desc "rvmrc GEMSET [TARGET] [VERSION]", "Create an .rvmrc file"
-  def rvmrc(gemset, target = ".", version = RUBY_VERSION)
-    key = [version, gemset].join('@')
-
-    if gemset_exists?(gemset)
-      response = ask("Enter gemset and Ruby version (default: `%s`):" % key)
-      key = response unless response.to_s.empty?
-    end
-
-    inside(target) do
-      run "rvm --rvmrc --create %s && rvm rvmrc trust" % key
-    end
+    clone(target)
+    cleanup(target)
+    create_rvmrc(target)
   end
 
   desc "install --clean", "Install all dependencies."
@@ -45,7 +25,7 @@ class Monk < Thor
     run("rvm rvmrc load")
     run("rvm --force gemset empty") if options.clean?
 
-    File.read(manifest).split("\n").each do |gem|
+    File.readlines(manifest).each do |gem|
       `gem install #{gem}`
     end
   end
@@ -53,42 +33,11 @@ class Monk < Thor
   desc "lock", "Lock the current dependencies to the gem manifest file."
   def lock
     run("rvm gemset export .gems")
-    gems = File.read(".gems")
-    remove_file(".gems", :verbose => false)
-    create_file(".gems", nil, :verbose => false) do
-      gems.split("\n").
-        reject { |line| line.start_with?("#") }.
-        map    { |line| line.gsub(/-v(.*?)$/, "--version \\1") }.
-        join("\n") + "\n"
-    end
   end
 
   desc "unpack", "Freeze the current dependencies."
   def unpack
     run("rvm gemset unpack")
-  end
-
-  desc "vendor NAME", "Vendor a github repo, e.g. soveran/ohm."
-  method_option :force, :type => :boolean
-  def vendor(repo)
-    repo   = "http://github.com/#{repo}.git" unless repo =~ %r{^[a-z]+://}
-    name   = repo.split("/").last.gsub(/\.git$/, "")
-    target = "vendor/gems/#{name}"
-
-    if File.exist?(target)
-      if not options.force?
-        say_status(:error, "#{target} already exists. Use --force to remove.")
-        exit
-      else
-        FileUtils.rm_r(target)
-      end
-    end
-
-    inside("vendor/gems") do
-      run "git clone #{repo} -q --depth 1"
-    end
-
-    cleanup(target)
   end
 
   desc "show NAME", "Display the repository address for NAME"
@@ -116,12 +65,10 @@ class Monk < Thor
   end
 
 private
-  def clone(source, target)
-    if Dir["#{target}/*"].empty?
-      say_status :fetching, source
-      system "git clone -q --depth 1 #{source} #{target}"
-      $?.success?
-    end
+  def clone(target)
+    say_status :fetching, repository
+    system "git clone -q --depth 1 #{source} #{target}"
+    say_status(:error, clone_error(target)) and exit unless $?.success?
   end
 
   def cleanup(target)
@@ -165,14 +112,6 @@ private
     ENV["MONK_HOME"] || File.join(Thor::Util.user_home)
   end
 
-  def appname(target)
-    target == '.' ? File.basename(FileUtils.pwd) : target
-  end
-
-  def vendored?(lib, version)
-    File.exist?("./vendor/gems/#{lib}-#{version}")
-  end
-
   def ensure_rvm
     begin
       `rvm`
@@ -184,12 +123,25 @@ private
     end
   end
 
-  def gemset_exists?(gemset)
-    `rvm gemset list`.split("\n").include?(gemset)
-  end
-
   def say_indented(str)
     say str.gsub(/^/, " " * 14)
   end
-end
 
+  def repository
+    source(options[:skeleton] || "default") or options[:skeleton]
+  end
+
+  def appname(target)
+    target == '.' ? File.basename(Dir.pwd) : target
+  end
+
+  def create_rvmrc(target)
+    gemset = target != "." ? target : File.basename(Dir.pwd)
+    key = [RUBY_VERSION, gemset].join('@')
+
+    puts "Key: #{key.inspect}"
+    inside(target) do
+      run "rvm --rvmrc --create %s && rvm rvmrc trust" % key
+    end
+  end
+end
