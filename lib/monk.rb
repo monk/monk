@@ -17,6 +17,8 @@ class Monk < Thor
     clone(target)
     cleanup(target)
     create_rvmrc(target)
+
+    say_status :success, "Created #{target}"
   end
 
   desc "install --clean", "Install all dependencies."
