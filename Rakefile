@@ -9,7 +9,9 @@ task :test do
 
   Cutest.run(Dir["test/monk_*.rb"])
 
-  `rvm gemset use monk-test && rvm --force gemset delete monk-test`
+  if `rvm gemset list` =~ /^monk-test$/
+    `rvm gemset use monk-test && rvm --force gemset delete monk-test`
+  end
 end
 
 task :default => :test

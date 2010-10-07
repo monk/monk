@@ -32,5 +32,8 @@ prepare do
   dot_monk = File.join(ROOT, "test", "tmp", ".monk")
 
   FileUtils.rm(dot_monk) if File.exist?(dot_monk)
-  `rvm gemset use monk-test && rvm --force gemset delete monk-test`
+
+  if `rvm gemset list` =~ /^monk-test$/
+    `rvm gemset use monk-test && rvm --force gemset delete monk-test`
+  end
 end
