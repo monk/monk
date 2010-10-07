@@ -23,4 +23,22 @@ scope do
     out, err = monk("init #{TARGET} --skeleton http://github.com/monkrb/skeleton.git")
     assert out.match(/initialized.* #{TARGET}/)
   end
+
+  test "create a correct rvmrc given a directory" do
+    monk("init #{TARGET}")
+
+    rvmrc = File.read(File.join(TARGET, ".rvmrc"))
+    assert rvmrc[RUBY_VERSION]
+    assert rvmrc[File.basename(TARGET)]
+  end
+
+  test "create a correct rvmrc given the current directory" do
+    FileUtils.mkdir(TARGET)
+    FileUtils.cd(TARGET) { monk("init .") }
+
+    rvmrc = File.read(File.join(TARGET, ".rvmrc"))
+    assert rvmrc[RUBY_VERSION]
+    assert rvmrc[File.basename(TARGET)]
+  end
 end
+
