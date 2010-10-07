@@ -139,7 +139,6 @@ private
     gemset = target != "." ? target : File.basename(Dir.pwd)
     key = [RUBY_VERSION, gemset].join('@')
 
-    puts "Key: #{key.inspect}"
     inside(target) do
       run "rvm --rvmrc --create %s && rvm rvmrc trust" % key
     end
