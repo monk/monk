@@ -26,7 +26,7 @@ class Monk < Thor
     run("rvm --force gemset empty") if options.clean?
 
     File.readlines(manifest).each do |gem|
-      `gem install #{gem}`
+      run("gem install #{gem}")
     end
   end
 
