@@ -9,7 +9,7 @@ task :test do
 
   Cutest.run(Dir["test/monk_*.rb"])
 
-  `rvm --force gemset delete monk-test`
+  `rvm gemset monk-test && rvm --force gemset delete monk-test`
 end
 
 task :default => :test
