@@ -28,7 +28,10 @@ class Monk < Thor
     run("rvm --force gemset empty") if options.clean?
 
     IO.popen("rvm gemset import") do |io|
-      say_status :info, io.readline.gsub(/\(.*?\)/, "") until io.eof?
+      until io.eof?
+        out = io.readline.gsub(/\(.*?\)/, "")
+        say_status :info, out if out =~ /installing|skipping/
+      end
     end
   end
 
