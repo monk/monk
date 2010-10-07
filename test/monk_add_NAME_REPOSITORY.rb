@@ -14,7 +14,7 @@ scope do
     monk("rm foobar")
   end
 
-  test "allow to fetch from the added repository when using the --skeleton parameter" do
+  test "allow to fetch from the added repository with --skeleton parameter" do
     monk("add glue http://github.com/monkrb/glue.git")
 
     out, _ = monk("init #{TARGET} --skeleton glue")
@@ -22,7 +22,7 @@ scope do
     assert out.match(/glue.git/)
   end
 
-  test "allow to fetch from the added repository when using the -s parameter" do
+  test "allow to fetch from the added repository with the -s parameter" do
     monk("add glue http://github.com/monkrb/glue.git")
 
     out, _ = monk("init #{TARGET} -s glue")
