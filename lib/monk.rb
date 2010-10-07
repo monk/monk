@@ -32,6 +32,7 @@ class Monk < Thor
 
   desc "lock", "Lock the current dependencies to the gem manifest file."
   def lock
+    run("rvm rvmrc load")
     run("rvm gemset export .gems")
   end
 
