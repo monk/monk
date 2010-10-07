@@ -1,5 +1,11 @@
 task :test do
-  require "cutest"
+  begin
+    require "thor"
+    require "cutest"
+  rescue LoadError
+    puts "! You need `thor` and `cutest` to run the test suite."
+    exit
+  end
 
   Cutest.run(Dir["test/monk_*.rb"])
 
