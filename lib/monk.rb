@@ -68,7 +68,7 @@ class Monk < Thor
 private
   def clone(target)
     say_status :fetching, repository
-    system "git clone -q --depth 1 #{source} #{target}"
+    system "git clone -q --depth 1 #{repository} #{target}"
     say_status(:error, clone_error(target)) and exit unless $?.success?
   end
 
@@ -137,7 +137,8 @@ private
   end
 
   def create_rvmrc(target)
-    gemset = target != "." ? target : File.basename(Dir.pwd)
+    target = Dir.pwd if target == "."
+    gemset = File.basename(target)
     key = [RUBY_VERSION, gemset].join('@')
 
     inside(target) do
