@@ -7,15 +7,15 @@ end
 # monk add NAME REPOSITORY
 scope do
   test "add the named repository to the configuration" do
-    monk("add foobar git://github.com/monkrb/foo.git")
+    monk("add foobar http://github.com/monkrb/foo.git")
     out, _ = monk("show foobar")
     assert out["foobar"]
-    assert out["git://github.com/monkrb/foo.git"]
+    assert out["http://github.com/monkrb/foo.git"]
     monk("rm foobar")
   end
 
   test "allow to fetch from the added repository when using the --skeleton parameter" do
-    monk("add glue git://github.com/monkrb/glue.git")
+    monk("add glue http://github.com/monkrb/glue.git")
 
     out, _ = monk("init #{TARGET} --skeleton glue")
     assert out.match(/initialized/)
@@ -23,7 +23,7 @@ scope do
   end
 
   test "allow to fetch from the added repository when using the -s parameter" do
-    monk("add glue git://github.com/monkrb/glue.git")
+    monk("add glue http://github.com/monkrb/glue.git")
 
     out, _ = monk("init #{TARGET} -s glue")
     assert out.match(/initialized/)

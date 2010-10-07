@@ -4,7 +4,7 @@ require File.expand_path("helper", File.dirname(__FILE__))
 scope do
   test "display the repository for NAME" do
     out, err = monk("show default")
-    assert out["git://github.com/monkrb/skeleton.git"]
+    assert out["http://github.com/monk/experimental.git"]
   end
 
   test "display nothing if NAME is not set" do

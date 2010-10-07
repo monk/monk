@@ -20,7 +20,7 @@ scope do
   end
 
   test "be able to pull from a url instead of a known skeleton" do
-    out, err = monk("init #{TARGET} --skeleton git://github.com/monkrb/skeleton.git")
+    out, err = monk("init #{TARGET} --skeleton http://github.com/monkrb/skeleton.git")
     assert out.match(/initialized.* #{TARGET}/)
   end
 end

@@ -5,6 +5,6 @@ scope do
   test "display the configured repositories" do
     out, err = monk("list")
     assert out["default"]
-    assert out["git://github.com/monkrb/skeleton.git"]
+    assert out["http://github.com/monk/experimental.git"]
   end
 end
