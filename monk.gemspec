@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name              = "monk"
-  s.version           = "1.0.0.beta0"
+  s.version           = "1.0.0.beta1"
   s.summary           = "Monk, the glue framework"
   s.description       = "Monk is a glue framework for web development in Ruby. It’s truly modular by relying on the best tool for each job. It’s also pretty fast thanks to Rack and Sinatra."
   s.authors           = ["Damian Janowski", "Michel Martens"]
