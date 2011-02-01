@@ -28,8 +28,14 @@ class Monk < Thor
     print_tasks task_categories[:repo], max
 
     say ""
-    say "Project commands:"
-    print_tasks other_tasks, max
+    say "Dependency commands:"
+    print_tasks task_categories[:deps], max
+
+    if other_tasks.any?
+      say ""
+      say "Project commands:"
+      print_tasks other_tasks, max
+    end
 
     say ""
     say "Misc commands:"
@@ -197,6 +203,7 @@ private
   def categories
     { :init => %w(init),
       :repo => %w(show add rm list),
+      :deps => %w(install lock unpack),
       :misc => %w(help version)
     }
   end
