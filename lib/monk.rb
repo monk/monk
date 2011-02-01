@@ -79,11 +79,22 @@ class Monk < Thor
   method_option :skeleton, :type => :string, :aliases => "-s"
   def init(target)
     ensure_rvm
+
+    say_status '*', "Fetching from #{repository} to #{target}/..."
+
     clone(target)
     cleanup(target)
     create_rvmrc(target)
+    show_tree(target)
 
-    say_status :success, "Created #{target}"
+    say ""
+    say "Success! Created #{target}."
+    say "Get started now:"
+    say ""
+    say "    $ cd #{target}"
+    say "    $ monk start"
+    say ""
+    say "Then visit http://localhost:4567."
   end
 
   desc "install [--clean]", "Install all project dependencies"
@@ -170,14 +181,12 @@ class Monk < Thor
 
 private
   def clone(target)
-    say_status :fetching, repository
-    system "git clone -q --depth 1 #{repository} #{target}"
+    run "git clone -q --depth 1 #{repository} #{target}"
     say_status(:error, clone_error(target)) and exit unless $?.success?
   end
 
   def cleanup(target)
     inside(target) { remove_file ".git" }
-    say_status :initialized, target
   end
 
   def source(name = "default")
@@ -248,7 +257,7 @@ private
     key = [RUBY_VERSION, gemset].join('@')
 
     inside(target) do
-      run "rvm --rvmrc --create %s && rvm rvmrc trust" % key
+      run "rvm --rvmrc --create #{key} && rvm rvmrc trust"
     end
   end
 
@@ -287,6 +296,19 @@ private
 
   def in_project?
     File.exists? 'Thorfile'
+  end
+
+  def show_tree(target)
+    say_status :created, "#{target}/"
+    Dir[File.join(target, '*')].each do |file|
+      f = file.gsub(/[^\/]+\//,'  ')
+      say_status '.', f  if File.file?(file)
+    end
+
+    Dir[File.join(target, '*/*'), File.join(target, '*')].sort.each do |file|
+      f = file.gsub(/[^\/]+\//,'  ') + '/'
+      say_status '.', f  if File.directory?(file)
+    end
   end
 end
 

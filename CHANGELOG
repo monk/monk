@@ -1,6 +1,8 @@
 v1.0.0.beta?
 ------------
 
- - Make 'monk' and 'monk help' appear more user-friendly. (rstacruz)
+ * Make 'monk' and 'monk help' appear more user-friendly. (rstacruz)
 
- - Add the 'monk version' command. (rstacruz)
+ * Add the 'monk version' command. (rstacruz)
+
+ * Make the 'monk init' command show more detailed info with instructions on how to proceed next. (rstacruz)
