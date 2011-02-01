@@ -46,7 +46,7 @@ class Monk < Thor
     say "  Monk makes your Sinatra development life easier."
   end
 
-  desc "init NAME [--skeleton SHORTHAND|URL]", "Initialize a Monk application"
+  desc "init NAME [-s SKELETON]", "Initialize a Monk application"
   method_option :skeleton, :type => :string, :aliases => "-s"
   def init(target)
     ensure_rvm
