@@ -9,4 +9,6 @@ v1.0.0.beta?
 
  * Doing 'monk init' now caches the skeleton git files into `~/.cache/monk/`. (rstacruz)
 
+ * Doing 'monk init' now warns you properly if the target path exists. (rstacruz)
+
  * Add the 'monk purge' command which cleans the Monk skeleton cache. (rstacruz)
