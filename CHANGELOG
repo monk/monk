@@ -12,3 +12,5 @@ v1.0.0.beta?
  * Doing 'monk init' now warns you properly if the target path exists. (rstacruz)
 
  * Add the 'monk purge' command which cleans the Monk skeleton cache. (rstacruz)
+
+ * Update the readme to remove legacy instructions and make a note of the new RVM dependency, and the 'monk install' command. (rstacruz)
