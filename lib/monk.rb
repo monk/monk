@@ -281,7 +281,7 @@ private
   end
 
   def in_project?
-    File.exists? File.join(self.class.source_root, 'Thorfile')
+    File.exists? 'Thorfile'
   end
 end
 
