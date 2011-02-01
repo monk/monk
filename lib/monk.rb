@@ -4,6 +4,8 @@ require "thor"
 require "yaml"
 
 class Monk < Thor
+  VERSION = "1.0.0.beta1"
+
   include Thor::Actions
 
   [:skip, :pretend, :force, :quiet].each do |task|
@@ -69,6 +71,11 @@ class Monk < Thor
   def rm(name)
     monk_config.delete(name)
     write_monk_config_file
+  end
+
+  desc "version", "Show the Monk version"
+  def version
+    say VERSION
   end
 
 private
