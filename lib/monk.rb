@@ -78,23 +78,30 @@ class Monk < Thor
   }
   method_option :skeleton, :type => :string, :aliases => "-s"
   def init(target)
-    ensure_rvm
+    if File.exists?(target)
+      s =  "Error: path `#{target}` already exists.\n"
+      s << "Run `#{CMD} init` into a different path, or delete the existing `#{target}` first."
+      raise Thor::Error, s
+    end
 
-    say_status '*', "Fetching from #{repository} to #{target}/..."
+    ensure_rvm
+    say "Fetching from #{repository} to #{target}/..."
+    say ""
 
     clone(target)
     cleanup(target)
     create_rvmrc(target)
-    show_tree(target)
+    #show_tree(target)
 
     say ""
-    say "Success! Created #{target}."
-    say "Get started now:"
+    say "Success! You've created a new Sinatra project in `#{target}`."
+    say "Get started now by typing:"
     say ""
     say "    $ cd #{target}"
+    say "    $ monk install"
     say "    $ monk start"
     say ""
-    say "Then visit http://localhost:4567."
+    say "...then visit http://localhost:4567."
   end
 
   desc "install [--clean]", "Install all project dependencies"
@@ -181,7 +188,8 @@ class Monk < Thor
 
 private
   def clone(target)
-    run "git clone -q --depth 1 #{repository} #{target}"
+    say_status :run, "git clone -q --depth 1 #{repository[0..20]}... #{target}"
+    system "git clone -q --depth 1 #{repository} #{target}"
     say_status(:error, clone_error(target)) and exit unless $?.success?
   end
 
@@ -296,19 +304,6 @@ private
 
   def in_project?
     File.exists? 'Thorfile'
-  end
-
-  def show_tree(target)
-    say_status :created, "#{target}/"
-    Dir[File.join(target, '*')].each do |file|
-      f = file.gsub(/[^\/]+\//,'  ')
-      say_status '.', f  if File.file?(file)
-    end
-
-    Dir[File.join(target, '*/*'), File.join(target, '*')].sort.each do |file|
-      f = file.gsub(/[^\/]+\//,'  ') + '/'
-      say_status '.', f  if File.directory?(file)
-    end
   end
 end
 
