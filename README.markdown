@@ -10,7 +10,7 @@ Monk is a glue framework for web development. It means that instead of
 installing all the tools you need for your projects, you can rely on a
 git repository and a list of dependencies, and Monk takes care of the
 rest. By default, it ships with a Sinatra application that includes
-Contest, Stories, Webrat, Ohm and some other niceties, along with a
+Cutest, Stories, Webrat, Ohm and some other niceties, along with a
 structure and helpful documentation to get your hands wet in no time.
 
 But Monk also respects your tastes, and you are invited to create your
