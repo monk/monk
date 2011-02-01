@@ -79,7 +79,7 @@ class Monk < Thor
   }
   method_option :skeleton, :type => :string, :aliases => "-s"
   def init(target)
-    if File.exists?(target)
+    if File.exists?(target) && !Dir[File.join(target, '*')].empty?
       s =  "Error: path `#{target}` already exists.\n"
       s << "Run `#{CMD} init` into a different path, or delete the existing `#{target}` first."
       raise Thor::Error, s
