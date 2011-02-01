@@ -44,9 +44,13 @@ class Monk < Thor
     say "Misc commands:"
     print_tasks task_categories[:misc], max
 
-    say ""
-    say "Description:"
-    say "  Monk makes your Sinatra development life easier."
+    unless in_project?
+      say ""
+      say "Get started by typing:"
+      say "  $ monk init my_project"
+      say ""
+      say "  See http://www.monkrb.com for more information."
+    end
   end
 
   desc "init NAME [-s SKELETON]", "Start a new project"
