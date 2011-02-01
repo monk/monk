@@ -5,11 +5,39 @@ require "yaml"
 
 class Monk < Thor
   VERSION = "1.0.0.beta1"
+  CMD     = "monk"
 
   include Thor::Actions
 
   [:skip, :pretend, :force, :quiet].each do |task|
     class_options.delete task
+  end
+
+  def help(*a)
+    return super  if a.any?
+
+    say "Usage: #{CMD} <command>"
+    max = self.class.all_tasks.map { |_, task| task.usage.size }.max
+
+    say ""
+    say "Commands:"
+    print_tasks task_categories[:init], max
+
+    say ""
+    say "Repository commands:"
+    print_tasks task_categories[:repo], max
+
+    say ""
+    say "Project commands:"
+    print_tasks other_tasks, max
+
+    say ""
+    say "Misc commands:"
+    print_tasks task_categories[:misc], max
+
+    say ""
+    say "Description:"
+    say "  Monk makes your Sinatra development life easier."
   end
 
   desc "init NAME [--skeleton SHORTHAND|URL]", "Initialize a Monk application"
@@ -156,6 +184,38 @@ private
 
     inside(target) do
       run "rvm --rvmrc --create %s && rvm rvmrc trust" % key
+    end
+  end
+
+  def print_tasks(tasks, max=nil)
+    max ||= tasks.map { |_, task| task.usage.size }.max
+    tasks.each do |name, task|
+      say "  %-#{max}s  # %s" % [ task.usage, task.description ]
+    end
+  end
+
+  def categories
+    { :init => %w(init),
+      :repo => %w(show add rm list),
+      :misc => %w(help version)
+    }
+  end
+
+  def task_categories
+    @task_categories ||= begin
+      tasks = self.class.all_tasks
+      Hash.new.tap { |h|
+        categories.each do |cat, names|
+          h[cat] = tasks.select { |_, task| names.include?(task.name) }
+        end
+      }
+    end
+  end
+
+  def other_tasks
+    @other_tasks ||= begin
+      taken = task_categories.values.map(&:values).flatten
+      self.class.all_tasks.select { |_, task| ! taken.include?(task) }
     end
   end
 end
