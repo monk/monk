@@ -13,8 +13,9 @@ class Monk < Thor
     class_options.delete task
   end
 
-  def help(*a)
-    return super  if a.any?
+  desc "help TASK", "Show help for a given TASK"
+  def help(*args)
+    return super  if args.any?
 
     say "Usage: #{CMD} <command>"
     max = self.class.all_tasks.map { |_, task| task.usage.size }.max
@@ -24,7 +25,7 @@ class Monk < Thor
     print_tasks task_categories[:init], max
 
     say ""
-    say "Repository commands:"
+    say "Skeleton commands:"
     print_tasks task_categories[:repo], max
 
     say ""
@@ -46,7 +47,7 @@ class Monk < Thor
     say "  Monk makes your Sinatra development life easier."
   end
 
-  desc "init NAME [-s SKELETON]", "Initialize a Monk application"
+  desc "init NAME [-s SKELETON]", "Start a new project"
   long_desc %{
     Initializes a Monk application of a given name.
 
@@ -77,7 +78,7 @@ class Monk < Thor
     say_status :success, "Created #{target}"
   end
 
-  desc "install [--clean]", "Install all dependencies."
+  desc "install [--clean]", "Install all project dependencies"
   long_desc %{
     Loads the given gemset name of your project, and installs the gems
     needed by your project.
@@ -103,7 +104,7 @@ class Monk < Thor
     end
   end
 
-  desc "lock", "Lock the current dependencies to the gem manifest file."
+  desc "lock", "Lock gem dependencies into a gem manifest file"
   long_desc %{
     Locks the current gem version dependencies of your project into the gem
     manifest file.
@@ -116,7 +117,7 @@ class Monk < Thor
     run("rvm gemset export .gems")
   end
 
-  desc "unpack", "Freeze the current dependencies."
+  desc "unpack", "Freeze gem dependencies into vendor/"
   long_desc %{
     Freezes the current gem dependencies of your project into the `vendor/`
     path of your project.
@@ -130,25 +131,25 @@ class Monk < Thor
     run("rvm gemset unpack vendor")
   end
 
-  desc "show NAME", "Display the repository address for NAME"
+  desc "show NAME", "Display info for skeleton NAME"
   def show(name)
     say_status name, source(name) || "repository not found"
   end
 
-  desc "list", "Lists the configured repositories"
+  desc "list", "List skeletons"
   def list
     monk_config.keys.sort.each do |key|
       show(key)
     end
   end
 
-  desc "add NAME REPOSITORY", "Add the repository to the configuration file"
+  desc "add NAME REPOSITORY", "Add a skeleton"
   def add(name, repository)
     monk_config[name] = repository
     write_monk_config_file
   end
 
-  desc "rm NAME", "Remove the repository from the configuration file"
+  desc "rm NAME", "Remove a skeleton"
   def rm(name)
     monk_config.delete(name)
     write_monk_config_file
