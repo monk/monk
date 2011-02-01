@@ -2,6 +2,7 @@
 
 require "thor"
 require "yaml"
+require "fileutils"
 
 class Monk < Thor
   VERSION = "1.0.0.beta1"
@@ -199,7 +200,7 @@ private
   def clone(target)
     repo = cached_repository
     say_status :create, "#{target}/".squeeze('/')
-    system "git clone -q --depth 1 #{repo} #{target}"
+    FileUtils.cp_r repo, target
     say_status(:error, clone_error(target)) and exit unless $?.success?
   end
 
@@ -271,15 +272,14 @@ private
 
   def cached_repository
     # If it's local, no need to cache
-    # return repository  if File.directory?(repository)
+    return repository  if File.directory?(repository)
 
-    dir = File.join(cache_path, File.basename(repository))
+    dir = File.join(cache_path, File.basename(options[:skeleton] || "default"))
     return dir  if File.directory?(dir)
 
     say_status :fetch, repository
     say_status nil, '(This only has to be done once. Please wait...)'
 
-    require 'fileutils'
     FileUtils.mkdir_p dir
     system "git clone -q --depth 1 #{repository} #{dir}"
     say_status(:error, clone_error(target)) and exit unless $?.success?

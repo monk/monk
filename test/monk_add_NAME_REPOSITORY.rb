@@ -18,15 +18,13 @@ scope do
     monk("add glue http://github.com/monkrb/glue.git")
 
     out, _ = monk("init #{TARGET} --skeleton glue")
-    assert out.match(/initialized/)
-    assert out.match(/glue.git/)
+    assert out.match(/Success!/)
   end
 
   test "allow to fetch from the added repository with the -s parameter" do
     monk("add glue http://github.com/monkrb/glue.git")
 
     out, _ = monk("init #{TARGET} -s glue")
-    assert out.match(/initialized/)
-    assert out.match(/glue.git/)
+    assert out.match(/Success!/)
   end
 end
