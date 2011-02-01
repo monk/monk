@@ -77,7 +77,7 @@ class Monk < Thor
     say_status :success, "Created #{target}"
   end
 
-  desc "install --clean", "Install all dependencies."
+  desc "install [--clean]", "Install all dependencies."
   method_option :clean, :type => :boolean
   def install(manifest = ".gems")
     run("rvm rvmrc load")
