@@ -8,3 +8,5 @@ v1.0.0.beta?
  * Make the 'monk init' command show more detailed info with instructions on how to proceed next. (rstacruz)
 
  * Doing 'monk init' now caches the skeleton git files into `~/.cache/monk/`. (rstacruz)
+
+ * Add the 'monk purge' command which cleans the Monk skeleton cache. (rstacruz)

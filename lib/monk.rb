@@ -178,6 +178,18 @@ class Monk < Thor
     write_monk_config_file
   end
 
+  desc "purge", "Purge the skeleton cache"
+  long_desc %{
+    Purges Monk's cache of skeleton files.
+
+    Everytime `#{CMD} init` is invoked, Monk automatically stores the
+    skeleton's files in a cache. This command will clear that cache.
+  }
+  def purge
+    remove_file cache_path
+    say "Monk's skeleton cache has been cleared."
+  end
+
   desc "version", "Show the Monk version"
   def version
     say "Monk #{VERSION}"
@@ -298,7 +310,7 @@ private
 
   def categories
     { :init => %w(init),
-      :repo => %w(show add rm list),
+      :repo => %w(show add rm list purge),
       :deps => %w(install lock unpack),
       :misc => %w(help version)
     }
