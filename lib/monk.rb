@@ -162,21 +162,48 @@ class Monk < Thor
 
   desc "list", "List skeletons"
   def list
-    monk_config.keys.sort.each do |key|
-      show(key)
+    keys = monk_config.keys.sort
+    max  = keys.map(&:size).max
+
+    return  unless keys.any?
+
+    tip "Available skeletons:"
+    tip ""
+
+    keys.each do |key|
+      say "  %-#{max}s     # %s" % [ key, source(key) ]
     end
+
+    tip ""
+    tip "Use `#{CMD} init APPNAME -s SKELETON` to create a project using the given skeleton."
   end
 
   desc "add NAME REPOSITORY", "Add a skeleton"
   def add(name, repository)
+    exists = monk_config.keys.include?(name)
     monk_config[name] = repository
     write_monk_config_file
+
+    if exists
+      tip "Updated skeleton `#{name}`."
+    else
+      tip "Added skeleton `#{name}`."
+    end
+    tip "Create a new project using this skeleton with `#{CMD} init APPNAME -s #{name}`."
   end
 
   desc "rm NAME", "Remove a skeleton"
   def rm(name)
+    unless monk_config.keys.include?(name)
+      tip "Skeleton `#{name}` not found."
+      tip "Type `#{CMD} list` for a list of defined skeletons."
+      return
+    end
+
     monk_config.delete(name)
     write_monk_config_file
+
+    tip "Removed skeleton `#{name}`."
   end
 
   desc "purge", "Purge the skeleton cache"
@@ -336,6 +363,10 @@ private
 
   def in_project?
     File.exists? 'Thorfile'
+  end
+
+  def tip(str)
+    $stderr.write "#{str}\n"
   end
 end
 

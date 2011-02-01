@@ -14,3 +14,5 @@ v1.0.0.beta?
  * Add the 'monk purge' command which cleans the Monk skeleton cache. (rstacruz)
 
  * Update the readme to remove legacy instructions and make a note of the new RVM dependency, and the 'monk install' command. (rstacruz)
+
+ * Update the display format of 'monk add', 'monk rm' and 'monk list'. (rstacruz)
