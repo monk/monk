@@ -20,13 +20,17 @@ class Monk < Thor
     say "Usage: #{CMD} <command>"
     max = self.class.all_tasks.map { |_, task| task.usage.size }.max
 
-    say ""
-    say "Commands:"
-    print_tasks task_categories[:init], max
+    if other_tasks.any?
+      say ""
+      say "Project commands:"
+      print_tasks other_tasks, max
+    end
 
-    say ""
-    say "Skeleton commands:"
-    print_tasks task_categories[:repo], max
+    unless in_project?
+      say ""
+      say "Commands:"
+      print_tasks task_categories[:init], max
+    end
 
     if in_project?
       say ""
@@ -34,11 +38,9 @@ class Monk < Thor
       print_tasks task_categories[:deps], max
     end
 
-    if other_tasks.any?
-      say ""
-      say "Project commands:"
-      print_tasks other_tasks, max
-    end
+    say ""
+    say "Skeleton commands:"
+    print_tasks task_categories[:repo], max
 
     say ""
     say "Misc commands:"
