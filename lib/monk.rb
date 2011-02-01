@@ -28,9 +28,11 @@ class Monk < Thor
     say "Skeleton commands:"
     print_tasks task_categories[:repo], max
 
-    say ""
-    say "Dependency commands:"
-    print_tasks task_categories[:deps], max
+    if in_project?
+      say ""
+      say "Dependency commands:"
+      print_tasks task_categories[:deps], max
+    end
 
     if other_tasks.any?
       say ""
@@ -272,6 +274,10 @@ private
       taken = task_categories.values.map(&:values).flatten
       self.class.all_tasks.select { |_, task| ! taken.include?(task) }
     end
+  end
+
+  def in_project?
+    File.exists? File.join(self.class.source_root, 'Thorfile')
   end
 end
 
