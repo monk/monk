@@ -78,6 +78,18 @@ class Monk < Thor
   end
 
   desc "install [--clean]", "Install all dependencies."
+  long_desc %{
+    Loads the given gemset name of your project, and installs the gems
+    needed by your project.
+
+    If the `--clean` option is given, the gemset is emptied first.
+
+    Gems are specified in the `.gems` file. This is created using
+    `#{CMD} lock`.
+
+    The gemset name is then specified in `.rvmrc`, which is created upon
+    creating your project with `monk init`.
+  }
   method_option :clean, :type => :boolean
   def install(manifest = ".gems")
     run("rvm rvmrc load")
@@ -92,12 +104,27 @@ class Monk < Thor
   end
 
   desc "lock", "Lock the current dependencies to the gem manifest file."
+  long_desc %{
+    Locks the current gem version dependencies of your project into the gem
+    manifest file.
+
+    This creates the `.gems` file for your project, which is then used by
+    `monk install`.
+  }
   def lock
     run("rvm rvmrc load")
     run("rvm gemset export .gems")
   end
 
   desc "unpack", "Freeze the current dependencies."
+  long_desc %{
+    Freezes the current gem dependencies of your project into the `vendor/`
+    path of your project.
+
+    This allows you to commit the gem contents into your project's repository.
+    This way, deploying your project elsewhere would not need `monk install`
+    or `gem install` to set up the dependencies.
+  }
   def unpack
     run("rvm rvmrc load")
     run("rvm gemset unpack vendor")
