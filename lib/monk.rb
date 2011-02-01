@@ -47,6 +47,26 @@ class Monk < Thor
   end
 
   desc "init NAME [-s SKELETON]", "Initialize a Monk application"
+  long_desc %{
+    Initializes a Monk application of a given name.
+
+    You may use a different skeleton by specifying `-s SKELETON`, where SKELETON refers to the name or URL of the skeleton. If this isn't specified, the default skeleton is used.
+
+    == Examples
+
+    This creates a new Monk/Sinatra application in the directory `myapp`.
+
+        $ monk init myapp
+
+    This creates a new application based on the skeleton in the given git repo.
+
+        $ monk add myskeleton https://github.com/rstacruz/myskeleton.git
+        $ monk init myapp -s myskeleton
+
+    You may also specify the URL directly.
+
+        $ monk init myapp -s https://github.com/rstacruz/myskeleton.git
+  }
   method_option :skeleton, :type => :string, :aliases => "-s"
   def init(target)
     ensure_rvm
