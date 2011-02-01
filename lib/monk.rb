@@ -85,9 +85,6 @@ class Monk < Thor
     end
 
     ensure_rvm
-    say "Fetching from #{repository} to #{target}/..."
-    say ""
-
     clone(target)
     cleanup(target)
     create_rvmrc(target)
@@ -188,8 +185,9 @@ class Monk < Thor
 
 private
   def clone(target)
-    say_status :run, "git clone -q --depth 1 #{repository[0..20]}... #{target}"
-    system "git clone -q --depth 1 #{repository} #{target}"
+    repo = cached_repository
+    say_status :create, "#{target}/".squeeze('/')
+    system "git clone -q --depth 1 #{repo} #{target}"
     say_status(:error, clone_error(target)) and exit unless $?.success?
   end
 
@@ -253,6 +251,28 @@ private
 
   def repository
     source(options[:skeleton] || "default") or options[:skeleton]
+  end
+
+  def cache_path
+    File.expand_path(File.join('~', '.cache', 'monk'))
+  end
+
+  def cached_repository
+    # If it's local, no need to cache
+    # return repository  if File.directory?(repository)
+
+    dir = File.join(cache_path, File.basename(repository))
+    return dir  if File.directory?(dir)
+
+    say_status :fetch, repository
+    say_status nil, '(This only has to be done once. Please wait...)'
+
+    require 'fileutils'
+    FileUtils.mkdir_p dir
+    system "git clone -q --depth 1 #{repository} #{dir}"
+    say_status(:error, clone_error(target)) and exit unless $?.success?
+
+    dir
   end
 
   def appname(target)

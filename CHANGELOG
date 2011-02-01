@@ -6,3 +6,5 @@ v1.0.0.beta?
  * Add the 'monk version' command. (rstacruz)
 
  * Make the 'monk init' command show more detailed info with instructions on how to proceed next. (rstacruz)
+
+ * Doing 'monk init' now caches the skeleton git files into `~/.cache/monk/`. (rstacruz)
