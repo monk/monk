@@ -165,7 +165,7 @@ class Monk < Thor
 
   desc "version", "Show the Monk version"
   def version
-    say VERSION
+    say "Monk #{VERSION}"
   end
 
 private
