@@ -220,10 +220,13 @@ private
     begin
       `rvm`
     rescue Errno::ENOENT
-      install = "bash < <( curl http://rvm.beginrescueend.com/releases/rvm-install-head )"
-      say_status :error, "Monk requires RVM to be installed."
-      say_status :hint,  "To install it, run: #{install}"
-      exit
+      s =  "Error: Monk requires RVM to be installed.\n"
+      s << "To install it, run:\n"
+      s << "\n"
+      s << "    bash < <( curl http://rvm.beginrescueend.com/releases/rvm-install-head )\n"
+      s << "\n"
+      s << "See http://rvm.beginrescueend.com/ for more information."
+      raise Thor::Error, s
     end
   end
 
