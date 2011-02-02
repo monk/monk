@@ -16,3 +16,5 @@ v1.0.0.beta?
  * Update the readme to remove legacy instructions and make a note of the new RVM dependency, and the 'monk install' command. (rstacruz)
 
  * Update the display format of 'monk add', 'monk rm' and 'monk list'. (rstacruz)
+
+ * Monk may now be invoked in a project's subdirectory. (rstacruz)

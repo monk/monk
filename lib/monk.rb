@@ -376,5 +376,18 @@ private
   def tip(str)
     $stderr.write "#{str}\n"
   end
-end
 
+  def self.find_in_path(file)
+    # Traverse back it's parents
+    dir = Dir.pwd
+    while true
+      path = File.join(dir, file)
+      return path  if File.exists?(path)
+
+      parent = File.expand_path(File.join(dir, '..'))
+      return nil  if parent == dir
+
+      dir = parent
+    end
+  end
+end

@@ -5,8 +5,12 @@ require File.join(File.dirname(__FILE__), "..", "lib", "monk")
 # A way to extend Monk is to write tasks in a Thorfile in the project's root
 # directory. Monk loads the Thorfile if there is one, and all the tasks that
 # are declared in the class Monk become available.
-if File.exists?("Thorfile")
-  load("Thorfile")
+# Monk will try to look for it in the current directory, and all it's parents,
+# until it comes across the Thorfile.
+thorfile = Monk.find_in_path("Thorfile")
+if thorfile
+  Dir.chdir File.dirname(thorfile)
+  load thorfile
 end
 
 # Start the monk tasks.
