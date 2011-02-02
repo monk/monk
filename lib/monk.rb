@@ -267,7 +267,7 @@ private
 
   def ensure_git
     begin
-      `xgit version`
+      `git version`
     rescue Errno::ENOENT
       s =  "Error: This command requires Git to be installed.\n"
       s << "To install Git, refer to the URLs below.\n"
