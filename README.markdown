@@ -21,8 +21,9 @@ Ensure that RVM is installed. If it isn't, use:
 
     $ bash < <( curl http://rvm.beginrescueend.com/releases/rvm-install-head )
 
-Install the Monk gem:
+Install the Monk gem in the global RVM gemset:
 
+    $ rvm use @global
     $ gem install monk
 
 For more information on RVM, see the [RVM website](http://rvm.beginrescueend.com/).
@@ -51,8 +52,3 @@ You may then start the web server:
     $ monk start
 
 You can access your site at [http://localhost:4567](http://localhost:4567).
-
-As the default skeleton is very opinionated, you will probably need to install
-and run [Redis](http://code.google.com/p/redis/), a key-value database.
-
-
