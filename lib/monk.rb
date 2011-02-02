@@ -117,10 +117,14 @@ class Monk < Thor
   }
   method_option :clean, :type => :boolean
   def install(manifest = ".gems")
+    return  unless File.file?(manifest)
+
     run("rvm rvmrc load")
     run("rvm --force gemset empty") if options.clean?
 
-    IO.popen("rvm gemset import") do |io|
+    cmd = "rvm gemset import"
+    say_status :run, cmd
+    IO.popen(cmd) do |io|
       until io.eof?
         out = io.readline.gsub(/\(.*?\)/, "")
         say_status :info, out if out =~ /installing|skipping/
