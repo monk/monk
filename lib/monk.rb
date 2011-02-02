@@ -59,7 +59,7 @@ class Monk < Thor
 
         $ monk init myapp
 
-    This creates a new application based on the skeleton in the given git repo.
+    This creates a new application based on the skeleton in the given Git repo.
 
         $ monk add myskeleton https://github.com/rstacruz/myskeleton.git
         $ monk init myapp -s myskeleton
@@ -223,7 +223,6 @@ private
     repo = cached_repository
     say_status :create, "#{target}/".squeeze('/')
     FileUtils.cp_r repo, target
-    say_status(:error, clone_error(target)) and exit unless $?.success?
   end
 
   def cleanup(target)
@@ -257,13 +256,25 @@ private
     "."
   end
 
-  def clone_error(target)
-    "Couldn't clone repository into target directory '#{target}'. " +
-    "You must have git installed and the target directory must be empty."
+  def clone_error(repository)
+    "\nError: Couldn't fetch the skeleton `#{repository}`.\n" +
+    "Make sure that you specify a defined skeleton (listed in `#{CMD} list`). You may also specify a working Git repository."
   end
 
   def monk_home
     ENV["MONK_HOME"] || File.join(Thor::Util.user_home)
+  end
+
+  def ensure_git
+    begin
+      `xgit version`
+    rescue Errno::ENOENT
+      s =  "Error: This command requires Git to be installed.\n"
+      s << "To install Git, refer to the URLs below.\n"
+      s << "    http://www.git-scm.com\n"
+      s << "    http://book.git-scm.com/2_installing_git.html\n"
+      raise Thor::Error, s
+    end
   end
 
   def ensure_rvm
@@ -295,16 +306,18 @@ private
   def cached_repository
     # If it's local, no need to cache
     return repository  if File.directory?(repository)
+    skeleton = options[:skeleton] || 'default'
 
-    dir = File.join(cache_path, File.basename(options[:skeleton] || "default"))
+    dir = File.join(cache_path, File.basename(skeleton))
     return dir  if File.directory?(dir)
 
+    ensure_git
     say_status :fetch, repository
     say_status nil, '(This only has to be done once. Please wait...)'
 
     FileUtils.mkdir_p dir
     system "git clone -q --depth 1 #{repository} #{dir}"
-    say_status(:error, clone_error(target)) and exit unless $?.success?
+    raise Thor::Error, clone_error(skeleton)  unless $?.success?
 
     dir
   end
