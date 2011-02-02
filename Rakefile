@@ -7,7 +7,9 @@ task :test do
     exit
   end
 
-  Cutest.run(Dir["test/monk_*.rb"])
+  # Allow running specific tests with TEST=monk_add rake
+  spec = ENV['TEST'] ? "*#{ENV['TEST']}*.rb" : "monk_*.rb"
+  Cutest.run(Dir["test/#{spec}"])
 
   if `rvm gemset list` =~ /^monk-test$/
     `rvm gemset use monk-test && rvm --force gemset delete monk-test`

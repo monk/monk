@@ -180,9 +180,9 @@ class Monk < Thor
     write_monk_config_file
 
     if exists
-      tip "Updated skeleton `#{name}`."
+      say "Updated skeleton `#{name}`."
     else
-      tip "Added skeleton `#{name}`."
+      say "Added skeleton `#{name}`."
     end
     tip "Create a new project using this skeleton with `#{CMD} init APPNAME -s #{name}`."
   end

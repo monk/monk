@@ -11,7 +11,7 @@ scope do
     FileUtils.touch(TARGET + "/foo")
 
     out, err = monk("init #{TARGET}")
-    assert err.match(/Error/)
+    assert err.match(/Error: path .* already exists/)
   end
 
   test "create a skeleton app in the target directory" do
