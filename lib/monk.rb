@@ -22,34 +22,25 @@ class Monk < Thor
     max = self.class.all_tasks.map { |_, task| task.usage.size }.max
 
     if other_tasks.any?
-      say ""
-      say "Project commands:"
+      say "\nProject commands:"
       print_tasks other_tasks, max
     end
 
-    unless in_project?
-      say ""
-      say "Commands:"
-      print_tasks task_categories[:init], max
-    end
-
     if in_project?
-      say ""
-      say "Dependency commands:"
+      say "\nDependency commands:"
       print_tasks task_categories[:deps], max
+    else
+      say "\nCommands:"
+      print_tasks task_categories[:init], max
+      say "\nSkeleton commands:"
+      print_tasks task_categories[:repo], max
     end
 
-    say ""
-    say "Skeleton commands:"
-    print_tasks task_categories[:repo], max
-
-    say ""
-    say "Misc commands:"
+    say "\nMisc commands:"
     print_tasks task_categories[:misc], max
 
     unless in_project?
-      say ""
-      say "Get started by typing:"
+      say "\nGet started by typing:"
       say "  $ monk init my_project"
       say ""
       say "  See http://www.monkrb.com for more information."
