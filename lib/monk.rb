@@ -326,10 +326,18 @@ private
     target == '.' ? File.basename(Dir.pwd) : target
   end
 
+  def rvm_gemset
+    File.basename(`rvm current`.strip)
+  end
+
+  def rvm_ruby_version
+    rvm_gemset.split('@').first
+  end
+
   def create_rvmrc(target)
     target = Dir.pwd if target == "."
     gemset = File.basename(target)
-    key = [RUBY_VERSION, gemset].join('@')
+    key = [rvm_ruby_version, gemset].join('@')
 
     inside(target) do
       run "rvm --rvmrc --create #{key} && rvm rvmrc trust"
